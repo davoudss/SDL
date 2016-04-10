@@ -409,7 +409,7 @@ WIN_GL_InitExtensions(_THIS)
     /* Check for WGL_EXT_create_context_es2_profile */
     _this->gl_data->HAS_WGL_EXT_create_context_es2_profile = SDL_FALSE;
     if (HasExtension("WGL_EXT_create_context_es2_profile", extensions)) {
-        _this->gl_data->HAS_WGL_EXT_create_context_es2_profile = SDL_TRUE;
+       // _this->gl_data->HAS_WGL_EXT_create_context_es2_profile = SDL_TRUE;
     }
 
     /* Check for GLX_ARB_context_flush_control */
