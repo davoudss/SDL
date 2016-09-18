@@ -33,9 +33,10 @@
 #include <CoreAudio/CoreAudio.h>
 #include <CoreServices/CoreServices.h>
 #else
-#include <AudioToolbox/AudioToolbox.h>
+#import <AVFoundation/AVFoundation.h>
 #endif
 
+#include <AudioToolbox/AudioToolbox.h>
 #include <AudioUnit/AudioUnit.h>
 
 /* Hidden "this" pointer for the audio functions */
@@ -43,11 +44,16 @@
 
 struct SDL_PrivateAudioData
 {
-    AudioUnit audioUnit;
-    int audioUnitOpened;
+    SDL_Thread *thread;
+    AudioQueueRef audioQueue;
+    AudioQueueBufferRef audioBuffer[2];
     void *buffer;
     UInt32 bufferOffset;
     UInt32 bufferSize;
+    AudioStreamBasicDescription strdesc;
+    SDL_sem *ready_semaphore;
+    char *thread_error;
+    SDL_atomic_t shutdown;
 #if MACOSX_COREAUDIO
     AudioDeviceID deviceID;
 #endif

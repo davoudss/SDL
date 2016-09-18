@@ -159,6 +159,7 @@ MIR_CreateDevice(int device_index)
     device->SetWindowMinimumSize = MIR_SetWindowMinimumSize;
     device->SetWindowMaximumSize = MIR_SetWindowMaximumSize;
     device->SetWindowTitle       = MIR_SetWindowTitle;
+    device->SetWindowGrab        = MIR_SetWindowGrab;
 
     device->CreateWindowFrom     = NULL;
     device->SetWindowIcon        = NULL;
@@ -166,7 +167,6 @@ MIR_CreateDevice(int device_index)
     device->SetWindowBordered    = NULL;
     device->SetWindowGammaRamp   = NULL;
     device->GetWindowGammaRamp   = NULL;
-    device->SetWindowGrab        = NULL;
     device->OnWindowEnter        = NULL;
     device->SetWindowPosition    = NULL;
 
@@ -277,8 +277,10 @@ MIR_VideoInit(_THIS)
     mir_data->software       = SDL_FALSE;
     mir_data->pixel_format   = mir_pixel_format_invalid;
 
-    if (!MIR_mir_connection_is_valid(mir_data->connection))
-        return SDL_SetError("Failed to connect to the Mir Server");
+    if (!MIR_mir_connection_is_valid(mir_data->connection)) {
+        return SDL_SetError("Failed to connect to the mir server: %s",
+            MIR_mir_connection_get_error_message(mir_data->connection));
+    }
 
     MIR_InitDisplays(_this);
     MIR_InitMouse();
