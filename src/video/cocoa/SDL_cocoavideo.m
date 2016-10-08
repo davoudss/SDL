@@ -96,6 +96,7 @@ Cocoa_CreateDevice(int devindex)
     device->MinimizeWindow = Cocoa_MinimizeWindow;
     device->RestoreWindow = Cocoa_RestoreWindow;
     device->SetWindowBordered = Cocoa_SetWindowBordered;
+    device->SetWindowResizable = Cocoa_SetWindowResizable;
     device->SetWindowFullscreen = Cocoa_SetWindowFullscreen;
     device->SetWindowGammaRamp = Cocoa_SetWindowGammaRamp;
     device->GetWindowGammaRamp = Cocoa_GetWindowGammaRamp;
@@ -149,8 +150,7 @@ Cocoa_VideoInit(_THIS)
     Cocoa_InitKeyboard(_this);
     Cocoa_InitMouse(_this);
 
-    const char *hint = SDL_GetHint(SDL_HINT_VIDEO_MAC_FULLSCREEN_SPACES);
-    data->allow_spaces = ( (floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_6) && (!hint || (*hint != '0')) );
+    data->allow_spaces = ((floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_6) && SDL_GetHintBoolean(SDL_HINT_VIDEO_MAC_FULLSCREEN_SPACES, SDL_TRUE));
 
     /* The IOPM assertion API can disable the screensaver as of 10.7. */
     data->screensaver_use_iopm = floor(NSAppKitVersionNumber) > NSAppKitVersionNumber10_6;

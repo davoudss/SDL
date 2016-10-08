@@ -211,8 +211,7 @@ ScheduleContextUpdates(SDL_WindowData *data)
 static int
 GetHintCtrlClickEmulateRightClick()
 {
-	const char *hint = SDL_GetHint( SDL_HINT_MAC_CTRL_CLICK_EMULATE_RIGHT_CLICK );
-	return hint != NULL && *hint != '0';
+	return SDL_GetHintBoolean(SDL_HINT_MAC_CTRL_CLICK_EMULATE_RIGHT_CLICK, SDL_FALSE);
 }
 
 static NSUInteger
@@ -823,6 +822,7 @@ SetWindowStyle(SDL_Window * window, NSUInteger style)
 - (void)mouseDown:(NSEvent *)theEvent
 {
     int button;
+    int clicks;
 
     /* Ignore events that aren't inside the client area (i.e. title bar.) */
     if ([theEvent window]) {
@@ -858,7 +858,9 @@ SetWindowStyle(SDL_Window * window, NSUInteger style)
         button = (int) [theEvent buttonNumber] + 1;
         break;
     }
-    SDL_SendMouseButton(_data->window, 0, SDL_PRESSED, button);
+
+    clicks = (int) [theEvent clickCount];
+    SDL_SendMouseButtonClicks(_data->window, 0, SDL_PRESSED, button, clicks);
 }
 
 - (void)rightMouseDown:(NSEvent *)theEvent
@@ -874,6 +876,7 @@ SetWindowStyle(SDL_Window * window, NSUInteger style)
 - (void)mouseUp:(NSEvent *)theEvent
 {
     int button;
+    int clicks;
 
     if ([self processHitTest:theEvent]) {
         SDL_SendWindowEvent(_data->window, SDL_WINDOWEVENT_HIT_TEST, 0, 0);
@@ -899,7 +902,9 @@ SetWindowStyle(SDL_Window * window, NSUInteger style)
         button = (int) [theEvent buttonNumber] + 1;
         break;
     }
-    SDL_SendMouseButton(_data->window, 0, SDL_RELEASED, button);
+
+    clicks = (int) [theEvent clickCount];
+    SDL_SendMouseButtonClicks(_data->window, 0, SDL_RELEASED, button, clicks);
 }
 
 - (void)rightMouseUp:(NSEvent *)theEvent
@@ -1112,8 +1117,11 @@ SetWindowStyle(SDL_Window * window, NSUInteger style)
 
 - (BOOL)acceptsFirstMouse:(NSEvent *)theEvent
 {
-    const char *hint = SDL_GetHint(SDL_HINT_MAC_MOUSE_FOCUS_CLICKTHROUGH);
-    return hint && *hint != '0';
+    if (SDL_GetHint(SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH)) {
+        return SDL_GetHintBoolean(SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH, SDL_FALSE);
+    } else {
+        return SDL_GetHintBoolean("SDL_MAC_MOUSE_FOCUS_CLICKTHROUGH", SDL_FALSE);
+    }
 }
 @end
 
@@ -1264,7 +1272,7 @@ Cocoa_CreateWindow(_THIS, SDL_Window * window)
         }
     }
 
-    [nswindow setContentView: contentView];
+    [nswindow setContentView:contentView];
     [contentView release];
 
     /* Allow files and folders to be dragged onto the window by users */
@@ -1482,6 +1490,20 @@ Cocoa_SetWindowBordered(_THIS, SDL_Window * window, SDL_bool bordered)
     }
 }}
 
+void
+Cocoa_SetWindowResizable(_THIS, SDL_Window * window, SDL_bool resizable)
+{ @autoreleasepool
+{
+    /* Don't set this if we're in a space!
+     * The window will get permanently stuck if resizable is false.
+     * -flibit
+     */
+    SDL_WindowData *data = (SDL_WindowData *) window->driverdata;
+    Cocoa_WindowListener *listener = data->listener;
+    if (![listener isInFullscreenSpace]) {
+        SetWindowStyle(window, GetWindowStyle(window));
+    }
+}}
 
 void
 Cocoa_SetWindowFullscreen(_THIS, SDL_Window * window, SDL_VideoDisplay * display, SDL_bool fullscreen)
