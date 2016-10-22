@@ -473,6 +473,11 @@ void loop()
 #endif
 }
 
+void loop2(void* ptr)
+{
+    loop();
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -525,7 +530,7 @@ main(int argc, char *argv[])
     }
 
     /* Set OpenGL parameters */
-    state->window_flags |= SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_BORDERLESS;
+    state->window_flags |= SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN | SDL_WINDOW_BORDERLESS | SDL_WINDOW_ALLOW_HIGHDPI;
     state->gl_red_size = 5;
     state->gl_green_size = 5;
     state->gl_blue_size = 5;
@@ -697,23 +702,8 @@ main(int argc, char *argv[])
     then = SDL_GetTicks();
     done = 0;
 
-#ifdef __EMSCRIPTEN__
-    emscripten_set_main_loop(loop, 0, 1);
-#else
-    while (!done) {
-        loop();
-    }
-#endif
-
-    /* Print out some timing information */
-    now = SDL_GetTicks();
-    if (now > then) {
-        SDL_Log("%2.2f frames per second\n",
-               ((double) frames * 1000) / (now - then));
-    }
-#if !defined(__ANDROID__) && !defined(__NACL__)  
-    quit(0);
-#endif    
+    SDL_iPhoneSetAnimationCallback(state->windows[0], 1, loop2, 0);
+    
     return 0;
 }
 
