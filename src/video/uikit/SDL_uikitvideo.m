@@ -175,37 +175,7 @@ UIKit_IsSystemVersionAtLeast(double version)
 
 CGRect
 UIKit_ComputeViewFrame(SDL_Window *window, UIScreen *screen)
-{
-
-#if !TARGET_OS_TV
-    BOOL hasiOS8 = UIKit_IsSystemVersionAtLeast(8.0);
-    if (hasiOS8) {
-        CGRect rect = [[UIScreen mainScreen] bounds];
-        fprintf(stderr,"UIKit_ComputeViewFrame -> %d,%d (original)\n",(int)rect.size.width,(int)rect.size.height);
-
-        NSInteger orient = UIKit_GetSupportedOrientations(window);
-        if (
-            ((orient&UIInterfaceOrientationMaskPortrait) == 0 && rect.size.width < rect.size.height)
-            ||
-            ((orient&UIInterfaceOrientationMaskLandscape) == 0 && rect.size.width > rect.size.height)
-            ) {
-            NSInteger tmp = rect.size.width;
-            rect.size.width = rect.size.height;
-            rect.size.height = tmp;
-        }
-        
-        /*
-        if ( (orient&UIInterfaceOrientationMaskPortrait) != 0 && (orient&UIInterfaceOrientationMaskLandscape) != 0) {
-            rect = screen.bounds;
-        }
-        */
-        
-        fprintf(stderr,"UIKit_ComputeViewFrame -> %d,%d (returned)\n",(int)rect.size.width,(int)rect.size.height);
-        
-        return rect;
-    }
-#endif
-    
+{    
 #if !TARGET_OS_TV && (__IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_7_0)
     BOOL hasiOS7 = UIKit_IsSystemVersionAtLeast(7.0);
 

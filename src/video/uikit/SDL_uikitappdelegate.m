@@ -530,6 +530,46 @@ SDL_LoadLaunchImageNamed(NSString *name, int screenh)
     SDL_SendDropComplete(NULL);
 }
 
+
+
+- (UIViewController*)topViewController
+{
+    return [self topViewControllerWithRootViewController:[UIApplication sharedApplication].keyWindow.rootViewController];
+}
+
+- (UIViewController*)topViewControllerWithRootViewController:(UIViewController*)rootViewController {
+    
+    if ([rootViewController isKindOfClass:[UINavigationController class]])
+    {
+        UINavigationController* nav = (UINavigationController*)rootViewController;
+        return [self topViewControllerWithRootViewController:nav.visibleViewController];
+    }
+    else if (rootViewController.presentedViewController)
+    {
+        UIViewController* presentedViewController = rootViewController.presentedViewController;
+        return [self topViewControllerWithRootViewController:presentedViewController];
+    }
+    else
+    {
+        return rootViewController;
+    }
+}
+
+
+- (UIInterfaceOrientationMask)application:(UIApplication *)application supportedInterfaceOrientationsForWindow:(UIWindow *)window
+{
+    
+    UIViewController *currentViewController = [self topViewController];
+    
+    if ([currentViewController respondsToSelector:@selector(stopAnimation)]) {
+        
+            return UIInterfaceOrientationMaskLandscape ;
+    }
+    
+    return UIInterfaceOrientationMaskAll;
+}
+
+
 #if TARGET_OS_TV
 /* TODO: Use this on iOS 9+ as well? */
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options

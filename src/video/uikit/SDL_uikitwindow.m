@@ -371,6 +371,8 @@ UIKit_GetWindowWMInfo(_THIS, SDL_Window * window, SDL_SysWMinfo * info)
 NSUInteger
 UIKit_GetSupportedOrientations(SDL_Window * window)
 {
+    return UIInterfaceOrientationMaskLandscape;
+    
     const char *hint = SDL_GetHint(SDL_HINT_ORIENTATIONS);
     NSUInteger validOrientations = UIInterfaceOrientationMaskAll;
     NSUInteger orientationMask = 0;
