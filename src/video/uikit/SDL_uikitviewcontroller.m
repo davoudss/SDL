@@ -283,6 +283,7 @@ SDL_AppleTVControllerUIHintChanged(void *userdata, const char *name, const char 
 
 - (void)updateKeyboard
 {
+    return;
     CGAffineTransform t = self.view.transform;
     CGPoint offset = CGPointMake(0.0, 0.0);
     CGRect frame = UIKit_ComputeViewFrame(window, self.view.window.screen);
