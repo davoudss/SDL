@@ -8,6 +8,9 @@ From the developer's point of view, OS X is a sort of hybrid Mac and
 Unix system, and you have the option of using either traditional
 command line tools or Apple's IDE Xcode.
 
+Command Line Build
+==================
+
 To build SDL using the command line, use the standard configure and make
 process:
 
@@ -21,7 +24,7 @@ the gcc-fat.sh script in build-scripts:
 
     mkdir mybuild
     cd mybuild
-    CC=$PWD/../build-scripts/gcc-fat.sh CXX=$PWD/../build-scripts/g++fat.sh ../configure
+    CC=$PWD/../build-scripts/gcc-fat.sh CXX=$PWD/../build-scripts/g++-fat.sh ../configure
     make
     sudo make install
 
